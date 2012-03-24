@@ -1,0 +1,7 @@
+{
+  "url": "https://bitbucket.org/ignacy.sokolowski/sublimevintagenumbers",
+  "version": "1.0.0",
+  "description": "Sublime Text 2 plugin for incrementing/decrementing numbers in Vintage command mode",
+  "author": "Ignacy Sokolowski",
+  "homepage": "https://bitbucket.org/ignacy.sokolowski/sublimevintagenumbers"
+}
