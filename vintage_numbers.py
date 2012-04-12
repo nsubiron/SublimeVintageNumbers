@@ -2,7 +2,6 @@
 Vintage Numbers plugin for Sublime Text 2
 by Ignacy Sokolowski
 """
-import re
 import sublime
 import sublime_plugin
 
@@ -21,8 +20,6 @@ class ViNumberMixin(object):
 
     def run(self, edit):
         new_sel = []
-        re_int = re.compile(r'\d')
-        re_ints = re.compile(r'^\d+$')
         int_method = getattr(int, self.int_method)
         for s in reversed(self.view.sel()):
             # Getting caret position.
@@ -31,13 +28,13 @@ class ViNumberMixin(object):
             line = self.view.substr(self.view.line(self.view.text_point(row, 0)))
             char = line[col]
 
-            if s.empty() and re_int.match(char):
+            if s.empty() and char.isdigit():
                 # Getting begining and end columns of the whole number position.
                 beg, end = (col, col + 1)
-                while beg >= 0 and re_ints.match(line[beg:end]):
+                while beg >= 0 and line[beg:end].isdigit():
                     beg -= 1
                 beg += 1
-                while end <= len(line) and re_ints.match(line[beg:end]):
+                while end <= len(line) and line[beg:end].isdigit():
                     end += 1
                 end -= 1
 
