@@ -32,7 +32,7 @@ using the command below:
 
 ### Download Manually ###
 
-* Download the files using the Bitbucket `get source` option
+* Download the files using the Github downloads option
 * Unzip/untar the files and rename the folder to `VintageNumbers`
 * Copy the folder to your Sublime Text 2 Packages directory
 
