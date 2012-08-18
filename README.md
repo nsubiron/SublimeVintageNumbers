@@ -28,7 +28,7 @@ It will download upgrades to your packages automatically.
 Go to your Sublime Text 2 Packages directory and clone the repository
 using the command below:
 
-    git clone https://bitbucket.org/ignacy.sokolowski/sublimevintagenumbers "VintageNumbers"
+    git clone https://github.com/ignacysokolowski/SublimeVintageNumbers "VintageNumbers"
 
 ### Download Manually ###
 
