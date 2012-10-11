@@ -31,28 +31,21 @@ class ViNumberMixin(object):
 
             if not s.empty() or len(line) == 0:
                 continue
+            # Find all numbers in the line
+            matches = re.finditer('(-?\d+)', line)
 
-            if line[col].isdigit():
-                # Getting begining and end columns of
-                # the whole number position.
-                beg, end = (col, col + 1)
-                while beg >= 0 and line[beg:end].isdigit():
-                    beg -= 1
-                beg += 1
-                while end <= len(line) and line[beg:end].isdigit():
-                    end += 1
-                end -= 1
-            else:
-                # Finding the next number in the current line.
-                match = re.search(r'\d+', line[col:])
-                if not match:
-                    continue
-                # Getting begining and end columns of number position.
-                beg, end = map(lambda x: x + col, match.span())
+            number = None
+            for match in matches:
+                beg, end = match.span()
+                # This number is after the current carret position
+                if col < end:
+                    number = line[beg:end]
+                    break
 
-            # Incrementing/decrementing the number and
-            # converting to string.
-            number = line[beg:end]
+            if not number:
+                continue
+
+            # Apply increment/decrement command to the number
             new_number = str(int_method(int(number), 1))
 
             # Counting region that will be replaced.
