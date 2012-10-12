@@ -4,7 +4,6 @@ Sublime Text 2 plugin: Vintage Numbers
 This plugin allows you to increment/decrement numbers in Vintage command mode
 in **Sublime Text 2**.  
 It works with caret at any position of a number.  
-It doesn't support negative numbers yet.
 
 Using
 -----
