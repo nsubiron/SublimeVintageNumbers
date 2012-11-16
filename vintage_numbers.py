@@ -7,6 +7,9 @@ import sublime
 import sublime_plugin
 
 
+NUMBER_RE = re.compile(r'(-?0[0-7]+)|(-?0[xX][\da-fA-F]+)|(-?\d+)')
+
+
 class ViNumberMixin(object):
     """Mixin for Sublime Text 2 TextCommands that enables incrementing
     and decrementing number at the caret position in Vintage command mode.
@@ -30,22 +33,37 @@ class ViNumberMixin(object):
 
             if not s.empty() or len(line) == 0:
                 continue
-            # Find all numbers in the line.
-            matches = re.finditer('(-?\d+)', line)
 
             number = None
+
+            # Searching for the first oct, hex or dec number in the line.
+            matches = NUMBER_RE.finditer(line)
             for match in matches:
                 beg, end = match.span()
-                # This number is after the current carret position.
                 if col < end:
+                    # This number is after the current carret position, getting
+                    # it from the line.
                     number = line[beg:end]
+                    # Checking number type to define converter and base.
+                    # Base is deduced from the contents of the string the same
+                    # way Python's function PyLong_FromString does it.
+                    unsigned = number[1:] if number[0] == '-' else number
+                    if unsigned == '0' or unsigned[0] != '0':
+                        converter = int
+                        base = 10
+                    elif unsigned[1] in ('x', 'X'):
+                        converter = hex
+                        base = 16
+                    else:
+                        converter = oct
+                        base = 8
                     break
 
             if not number:
                 continue
 
-            # Apply increment/decrement command to the number.
-            new_number = str(int_method(int(number), 1))
+            # Applying increment/decrement command to the number.
+            new_number = str(converter(int_method(int(number, base), 1)))
 
             # Counting region that will be replaced.
             start = s.b - (col - beg)
