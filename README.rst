@@ -24,7 +24,7 @@ It will download upgrades automatically.
 Package Control
 ---------------
 
-* Follow instructions on http://wbond.net/sublime_packages/package_control
+* Follow instructions on https://sublime.wbond.net/installation
 * Install using ``Package Control: Install`` > ``Vintage Numbers package``
 
 Using Git
