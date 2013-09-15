@@ -50,3 +50,22 @@ Changelog
 -----
 
 * Initial release
+
+
+Contributing
+============
+
+* Follow PEP-8 rules
+* Follow PEP-257 rules
+* Follow The Zen of Python
+* Test your commits
+
+Testing
+-------
+
+Tests can be run from Sublime Text console.
+
+Open the console using ``ctrl+``` shortcut or the ``View > Show Console`` menu.
+Once open, paste this Python code into the console::
+
+    import vintage_numbers_tests; vintage_numbers_tests.run()
