@@ -11,7 +11,13 @@ import unittest
 
 import sublime
 
-import vintage_numbers
+try:
+
+    from . import vintage_numbers
+
+except ImportError:
+
+    import vintage_numbers
 
 
 class ViNumberMixinTestCase(unittest.TestCase):
