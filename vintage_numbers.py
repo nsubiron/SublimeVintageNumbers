@@ -109,15 +109,40 @@ class ViNumberMixin(object):
 
         # Find first oct, hex or dec number in the line.
         number_position = self._find_first_number(line, column_no)
-        if number_position is None:
-            return
-        # Found a number after the current caret position -- extract it
-        # from the line.
-        beg, end = number_position
-        number = line[beg:end]
+        if number_position:
+            # Found a number after the current caret position -- extract it
+            # from the line.
+            beg, end = number_position
+            number = line[beg:end]
 
-        # Apply increment/decrement command to the number.
-        new_number = self.update_number(number)
+            # Apply increment/decrement command to the number.
+            new_number = self.update_number(number)
+        else:
+            # Retrieve view settings.
+            settings = self.view.settings()
+            if not settings.get('vintage_numbers_toggle_booleans', False):
+                return
+            default = [['true', 'false']]
+            word_tuples = settings.get('vintage_numbers_word_tuples', default)
+
+            # Compile the regular expression object based on settings.
+            words = []
+            for word_tuple in word_tuples:
+                words.extend(word_tuple)
+            pattern = r'\b({0})\b'.format('|'.join(words))
+            words_re = re.compile(pattern, re.IGNORECASE)
+
+            # Find first occurrence of words in the line.
+            word_position = self._find_first(line, column_no, words_re)
+            if word_position is None:
+                return
+
+            # Retrieve the word.
+            beg, end = word_position
+            word = line[beg:end]
+
+            # Apply increment/decrement command to the word.
+            new_number = self.update_word(word, word_tuples)
 
         # Replace number with the incremented/decremented one.
         replace_region = self._get_replace_region(region, column_no, beg, end)
@@ -145,6 +170,28 @@ class ViNumberMixin(object):
         new_number = self.update_int(int_number)
         converted = str(number_type(new_number))
         return converted
+
+    def update_word(self, word, word_tuples):
+        """Find an occurrence of word in the list of tuples word_tuples and
+        return the next (incremented or decremented) item in the same tuple.
+
+        :param word:
+            String word to update.
+        :param word_tuples:
+            List of word tuples.
+
+        """
+        modifiers = [lambda x: x, str.upper, str.title]
+        for words in word_tuples:
+            for modifier in modifiers:
+                m_words = [modifier(x) for x in words]
+                try:
+                    index = m_words.index(word)
+                    updated_index = self.update_int(index)
+                    return m_words[updated_index % len(m_words)]
+                except ValueError:
+                    pass
+        raise KeyError
 
     def update_int(self, number):
         """Increment or decrement an integer.
@@ -183,7 +230,26 @@ class ViNumberMixin(object):
             Number of caret position column.
 
         """
-        matches = NUMBER_RE.finditer(line)
+        return self._find_first(line, column, NUMBER_RE)
+
+    def _find_first(self, line, column, regex):
+        """Find position of the first match of the regular expression in the
+        line, after the caret.
+
+        If there's any number matching :param:`regex` after the given
+        column, return 2-tuple: number of column where the matched number
+        starts and number of column where it ends.
+        Otherwise return ``None``.
+
+        :param line:
+            Line contents.
+        :param column:
+            Number of caret position column.
+        :param regex:
+            Compiled regular expression object.
+
+        """
+        matches = regex.finditer(line)
         for match in matches:
             beg, end = match.span()
             if end > column:
